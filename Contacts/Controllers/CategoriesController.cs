@@ -19,14 +19,14 @@ namespace Contacts.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet]//Żądanie HTTP GET na "api/Categories, zwraca kategorie i ich podkategorie"
         public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesWithSubCategories()
         {
             var categoriesWithSubCategories = await _context.Categories.Include(c => c.SubCategories).ToListAsync();
             return Ok(categoriesWithSubCategories);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")]//Żądanie HTTP GET na "api/Categories/{id}, zwraca informacje o wybranej kategorii, w tym jej podkategorie
         public async Task<ActionResult<Category>> GetCategoryWithSubCategories(int id)
         {
             var category = await _context.Categories.Include(c => c.SubCategories).FirstOrDefaultAsync(c => c.Id == id);

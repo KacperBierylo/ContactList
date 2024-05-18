@@ -188,7 +188,7 @@ function loadAddContact() {
         .catch(error => console.error('Error:', error));
     });
 
-    handleCategoryChange();
+    //handleCategoryChange();
 }
 
 
@@ -251,7 +251,8 @@ function loadEditContact(id) {
             </form>
         `;
         document.getElementById('content').innerHTML = editHTML;
-
+        var contactCategory = 0;
+        var contactSubCategory = contact.subCategory;
         fetch('https://localhost:7050/api/Categories')
         .then(response => response.json())
         .then(categories => {
@@ -259,15 +260,16 @@ function loadEditContact(id) {
           categories.forEach(category => {
             const option = document.createElement('option');
             option.value = category.id;
+            if(contact.category == category.name){
+                contactCategory = category.id;
+                handleCategoryChange(category.id,contactSubCategory );
+            }
             option.textContent = category.name;
             select.appendChild(option);
           });
         })
         .catch(error => console.error('Error fetching categories:', error));
-
-
-        handleCategoryChange(contact.category);
-
+      
         document.getElementById('editContactForm').addEventListener('submit', function(event) {
             event.preventDefault();
             let subcategory = "Brak"
@@ -337,22 +339,24 @@ function loadEditContact(id) {
     .catch(error => console.error('Error:', error));
 }
 
-function handleCategoryChange(selectedCategory = null) {
-    console.log("xd")
-    category = selectedCategory || document.getElementById('category').value;
+function handleCategoryChange(categoryId=null, Csubcategory=null) {
+ 
 
-    if(document.getElementById('category').value===""){
+    if(categoryId == null){
 
-        return;        
+        category = document.getElementById('category').value;       
     }
-    console.log(document.getElementById('category').value)
+    else{
+        category = categoryId;
+    }
+
     let subcategories = []
     let canChoose = false
 
     fetch(`https://localhost:7050/api/Categories/${category}`)
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Błąd podczas komunikacji z serwerem');
       }
       return response.json();
     })
@@ -360,12 +364,10 @@ function handleCategoryChange(selectedCategory = null) {
       subcategories = data.subCategories;
       canChoose = data.canChoose;
       if(canChoose && subcategories.length != 0){
-        console.log("opcja 1");
         const selectSubcategory = document.createElement('select');
         selectSubcategory.id = 'subcategory';
         
         subcategories.forEach(subcategory => {
-            console.log(subcategories)
           const option = document.createElement('option');
           option.value = subcategory.name;
           option.textContent = subcategory.name;
@@ -376,13 +378,24 @@ function handleCategoryChange(selectedCategory = null) {
         label.textContent = 'Podkategoria';
         
         const subcategoryContainer = document.getElementById('subcategoryContainer');
+        if(!(Csubcategory == null))
+         selectSubcategory.value = Csubcategory;
+
+        const categoryContainer = document.getElementById('category');
+        if(!(categoryId==null))
+            categoryContainer.value = categoryId;
         subcategoryContainer.innerHTML = '';
         subcategoryContainer.appendChild(label);
         subcategoryContainer.appendChild(selectSubcategory);
     }
     else if(canChoose){
-        const subcategoryContainer = document.getElementById('subcategoryContainer');
-        subcategoryContainer.innerHTML = '<label>Podkategoria</label> <input type="text" id="subcategory">';
+        const categoryContainer = document.getElementById('category');
+        if(!(categoryId==null))
+            categoryContainer.value = categoryId;
+        if(!(Csubcategory == null))
+            subcategoryContainer.innerHTML = `<label>Podkategoria</label> <input type="text" value = ${Csubcategory} id="subcategory">`;
+        else
+            subcategoryContainer.innerHTML = '<label>Podkategoria</label> <input type="text" id="subcategory">';
 
     }
     else{
@@ -454,7 +467,6 @@ function loadLogin() {
         .then(data => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                console.log('Token saved successfully');
                 loadHome();
                 updateNav();
             } else {

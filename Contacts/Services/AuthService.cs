@@ -21,12 +21,12 @@ namespace Contacts.Services
         public string Authenticate(string username, string password)
         {
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash)) //jeśli użytkownik o podanej nazwie nie istnieje lub hash jego hasła nie zgadza się z tym w bazie
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var tokenDescriptor = new SecurityTokenDescriptor   //właściwości tokenu
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
                 Expires = DateTime.UtcNow.AddDays(7),
@@ -35,19 +35,19 @@ namespace Contacts.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            return tokenHandler.WriteToken(token);  //w przypadku powodzenia token jest tworzony i zwracany do użytkownika
         }
 
         public User Register(string username, string password)
         {
-            if (_context.Users.Any(x => x.Username == username))
+            if (_context.Users.Any(x => x.Username == username))    //jeśli użytkownik o podanej nazwie istnieje, rejestracja nie powiedzie się
                 return null;
 
 
             var user = new User
             {
                 Username = username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password) //szyfrowanie hasła
             };
 
             _context.Users.Add(user);

@@ -6,7 +6,7 @@ using Contacts.Models;
 
 namespace Contacts.Data
 {
-    public static class SeedData
+    public static class SeedData    //dodanie początkowych danych do bazy
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
@@ -19,8 +19,7 @@ namespace Contacts.Data
                   {
                       return;
                   }
-
-
+                //dodanie kategorii i ich podkategorii
                 context.Categories.AddRange(
                     new Category
                     {
@@ -45,7 +44,7 @@ namespace Contacts.Data
                     }
                 );
                 context.SaveChanges();
-                context.SaveChanges();
+                //dodanie początkowych kontaktów
                 context.Contacts.AddRange(
                       new Contact
                       {
@@ -68,8 +67,9 @@ namespace Contacts.Data
                           BirthDate = new DateTime(1990, 2, 2)
                       }
                   );
+                //dodanie początkowych użytkowników
 
-                  context.Users.AddRange(
+                context.Users.AddRange(
                       new User
                       {
                           Username = "admin",
@@ -86,12 +86,5 @@ namespace Contacts.Data
               }
           }
 
-          private static string HashPassword(string password)
-          {
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-
-            return hashedPassword;
-
-        }
     }
 }

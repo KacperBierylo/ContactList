@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 namespace Contacts.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext   //Struktura bazy danych
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Contact> Contacts { get; set; }
@@ -16,7 +16,7 @@ namespace Contacts.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<User>() //zapewnia unikalność nazwy użytkownika
                 .HasIndex(u => u.Username)
                 .IsUnique();
         }

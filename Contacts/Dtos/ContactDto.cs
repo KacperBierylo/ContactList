@@ -1,6 +1,6 @@
 ﻿namespace Contacts.Dtos
 {
-    public class ContactDto
+    public class ContactDto //obiekt transferu danych dla kontaktu
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
