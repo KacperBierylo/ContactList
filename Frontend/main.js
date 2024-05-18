@@ -57,7 +57,7 @@ function loadContactDetails(id) {
             <p><strong>Telefon:</strong> ${contact.phone}</p>
             <p><strong>Kategoria:</strong> ${contact.category}</p>
             <p><strong>Podkategoria:</strong> ${contact.subCategory}</p>
-            <p><strong>Data urodzenia:</strong> ${contact.birthDate}</p>
+            <p><strong>Data urodzenia:</strong> ${new Date(contact.birthDate).toLocaleDateString('pl')}</p>
             <button onclick="loadEditContact(${contact.id})">Edytuj</button>
         `;
         document.getElementById('content').innerHTML = detailsHTML;
@@ -128,7 +128,7 @@ function loadAddContact() {
 
     document.getElementById('addContactForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        let subcategory = "Brak"
+        let subcategory = "–"
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('email').value;
@@ -272,7 +272,7 @@ function loadEditContact(id) {
       
         document.getElementById('editContactForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            let subcategory = "Brak"
+            let subcategory = "–"
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
@@ -393,7 +393,7 @@ function handleCategoryChange(categoryId=null, Csubcategory=null) {
         if(!(categoryId==null))
             categoryContainer.value = categoryId;
         if(!(Csubcategory == null))
-            subcategoryContainer.innerHTML = `<label>Podkategoria</label> <input type="text" value = ${Csubcategory} id="subcategory">`;
+            subcategoryContainer.innerHTML = `<label>Podkategoria</label> <input type="text" id="subcategory" value = ${Csubcategory} >`;
         else
             subcategoryContainer.innerHTML = '<label>Podkategoria</label> <input type="text" id="subcategory">';
 
