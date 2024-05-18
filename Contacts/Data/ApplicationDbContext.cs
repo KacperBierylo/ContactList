@@ -14,5 +14,11 @@ namespace Contacts.Data
         {
             optionsBuilder.UseSqlite("Data Source=contacts.db");
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+        }
     }
 }

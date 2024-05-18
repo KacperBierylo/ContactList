@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.RegularExpressions;
 namespace Contacts.Services
 {
     public class AuthService : IAuthService
@@ -41,6 +42,7 @@ namespace Contacts.Services
         {
             if (_context.Users.Any(x => x.Username == username))
                 return null;
+
 
             var user = new User
             {

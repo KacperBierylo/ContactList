@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 function loadHome() {
     document.getElementById('content').innerHTML = `
-        <h2>Lista kontaktów</h2>
+        <h2>Lista kontaktów - aplikacja</h2>
     `;
 }
 
@@ -36,7 +36,7 @@ function loadContacts() {
 function loadContactDetails(id) {
     const token = localStorage.getItem('token');
     if (!token) {
-        console.error('No token found');
+        console.error('Użytkownik niezalogowany');
         loadLogin();
         return;
     }
@@ -52,13 +52,13 @@ function loadContactDetails(id) {
     .then(contact => {
         const detailsHTML = `
             <h2>Szczegóły</h2>
-            <p><strong>Imię:</strong> ${contact.firstName} ${contact.lastName}</p>
+            <p><strong>Imię i nazwisko:</strong> ${contact.firstName} ${contact.lastName}</p>
             <p><strong>Email:</strong> ${contact.email}</p>
             <p><strong>Telefon:</strong> ${contact.phone}</p>
             <p><strong>Kategoria:</strong> ${contact.category}</p>
             <p><strong>Podkategoria:</strong> ${contact.subCategory}</p>
             <p><strong>Data urodzenia:</strong> ${contact.birthDate}</p>
-            <button onclick="loadEditContact(${contact.id})">Edit</button>
+            <button onclick="loadEditContact(${contact.id})">Edytuj</button>
         `;
         document.getElementById('content').innerHTML = detailsHTML;
     })
@@ -138,7 +138,30 @@ function loadAddContact() {
             subcategory = document.getElementById('subcategory').value;
            }
         const birthDate = document.getElementById('birthDate').value;
+        if(firstName === ""){
+            alert('Imię kontaktu nie może być puste');
+            return;
+        }
+        if(lastName === ""){
+            alert('Nazwisko kontaktu nie może być puste');
+            return;
+        }
+        var regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!regexEmail.test(email)) {
+            alert('Nieprawidłowy adres email');
+            return;
+        }
 
+        var regexPhone = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
+        if (!regexPhone.test(phone)) {
+            alert('Nieprawidłowy numer telefonu');
+            return;
+        }
+
+        if(birthDate === ""){
+            alert('Data urodzenia kontaktu nie może być pusta');
+            return;
+        }
         fetch('https://localhost:7050/api/contacts', {
             method: 'POST',
             headers: {
@@ -257,6 +280,32 @@ function loadEditContact(id) {
              subcategory = document.getElementById('subcategory').value;
             }
             const birthDate = document.getElementById('birthDate').value;
+  
+            if(firstName === ""){
+                alert('Imię kontaktu nie może być puste');
+                return;
+            }
+            if(lastName === ""){
+                alert('Nazwisko kontaktu nie może być puste');
+                return;
+            }
+
+            var regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+            if (!regexEmail.test(email)) {
+                alert('Nieprawidłowy adres email');
+                return;
+            }
+    
+            var regexPhone = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})/;
+    
+            if (!regexPhone.test(phone)) {
+                alert('Nieprawidłowy numer telefonu');
+                return;
+            }
+            if(birthDate === ""){
+                alert('Data urodzenia kontaktu nie może być pusta');
+                return;
+            }
 
             fetch(`https://localhost:7050/api/contacts/${id}`, {
                 method: 'PUT',
@@ -279,7 +328,7 @@ function loadEditContact(id) {
                 if (response.ok) {
                     loadContacts();
                 } else {
-                    alert('Failed to update contact. Please try again.');
+                    alert('Nie udało się zaktualizować kontaktu');
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -324,7 +373,7 @@ function handleCategoryChange(selectedCategory = null) {
         });
         
         const label = document.createElement('label');
-        label.textContent = 'SubCategory';
+        label.textContent = 'Podkategoria';
         
         const subcategoryContainer = document.getElementById('subcategoryContainer');
         subcategoryContainer.innerHTML = '';
@@ -366,7 +415,7 @@ function deleteContact(id) {
         if (response.ok) {
             loadContacts();
         } else {
-            alert('Failed to delete contact. Please try again.');
+            alert('Nie udało się usunąć kontaktu');
         }
     })
     .catch(error => console.error('Error:', error));
@@ -377,16 +426,16 @@ function loadLogin() {
         <h2>Zaloguj się</h2>
         <form id="loginForm">
             <div>
-                <label>Username</label>
+                <label>Nazwa</label>
                 <input type="text" id="username">
             </div>
             <div>
-                <label>Password</label>
+                <label>Hasło</label>
                 <input type="password" id="password">
             </div>
             <button type="submit">Login</button>
         </form>
-        <p>Don't have an account? <a href="#" onclick="loadRegistration()">Register</a></p>
+        <p>Nie masz konta? <a href="#" onclick="loadRegistration()">Zarejestruj się</a></p>
     `;
 
     document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -409,7 +458,7 @@ function loadLogin() {
                 loadHome();
                 updateNav();
             } else {
-                alert('Invalid username or password');
+                alert('Nieprawidłowa nazwa użytkownika lub hasło');
             }
         })
         .catch(error => console.error('Error:', error));
@@ -421,20 +470,20 @@ function loadRegistration() {
         <h2>Rejestracja</h2>
         <form id="registrationForm">
             <div>
-                <label>Username</label>
+                <label>Nazwa</label>
                 <input type="text" id="regUsername">
             </div>
             <div>
-                <label>Password</label>
+                <label>Hasło</label>
                 <input type="password" id="regPassword">
             </div>
             <div>
-                <label>Confirm Password</label>
+                <label>Potwierdź hasło</label>
                 <input type="password" id="confirmPassword">
             </div>
-            <button type="submit">Register</button>
+            <button type="submit">Zarejestruj</button>
         </form>
-        <p>Already have an account? <a href="#" onclick="loadLogin()">Login</a></p>
+        <p>Masz już konto? <a href="#" onclick="loadLogin()">Zaloguj</a></p>
     `;
 
     document.getElementById('registrationForm').addEventListener('submit', function(event) {
@@ -444,7 +493,13 @@ function loadRegistration() {
         const confirmPassword = document.getElementById('confirmPassword').value;
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match');
+            alert('Hasła nie zgadzają się ze sobą');
+            return;
+        }
+        var regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+        if (!regex.test(password)) {
+            alert('Hasło musi zawierać co najmniej jedną wielką literę angielską, małą literę angielską, cyfrę, znak specjalny (#?!@$%^&*-), osiem znaków.');
             return;
         }
 
@@ -459,7 +514,7 @@ function loadRegistration() {
             if (response.ok) {
                 loadLogin();
             } else {
-                alert('Registration failed. Please try again.');
+                alert('Nazwa użytkownika zajęta.');
             }
         })
         .catch(error => console.error('Error:', error));

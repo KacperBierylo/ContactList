@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.RegularExpressions;
 
 namespace Contacts.Controllers
 {
@@ -44,6 +46,11 @@ namespace Contacts.Controllers
             var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category)
                                          .Select(c => c.Name)
                                          .FirstOrDefault();
+            if (!ValidateEmail(contactDto.Email))
+            {
+                return BadRequest("Email is incorrect");
+            }
+
             if (categoryName != null)
             {
                 var contact = new Contact
@@ -68,7 +75,17 @@ namespace Contacts.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateContact(int id, [FromBody] ContactDto contactDto)
         {
+            if(contactDto.FirstName.IsNullOrEmpty())
+                return BadRequest("Empty name");
 
+            if (!ValidateEmail(contactDto.Email))
+            {
+                return BadRequest("Email is incorrect");
+            }
+            if (!ValidatePhoneNumber(contactDto.Phone))
+            {
+                return BadRequest("Phone number is incorrect");
+            }
             var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category)
                                          .Select(c => c.Name)
                                          .FirstOrDefault();
@@ -103,6 +120,21 @@ namespace Contacts.Controllers
             _context.SaveChanges();
 
             return NoContent();
+        }
+        private bool ValidateEmail(string password)
+        {
+            var regex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+            if (!regex.IsMatch(password))
+                return false;
+            return true;
+        }
+
+        private bool ValidatePhoneNumber(string phoneNumber) {
+
+            var regex = new Regex(@"\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{3})");
+            if(!regex.IsMatch(phoneNumber))
+                return false;
+            return true;
         }
     }
 }
