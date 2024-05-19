@@ -195,7 +195,7 @@ function loadAddContact() {
 function loadEditContact(id) {
     const token = localStorage.getItem('token');
     if (!token) {
-        console.error('No token found');
+        //console.error('No token found');
         loadLogin();
         return;
     }

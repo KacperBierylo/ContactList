@@ -5,38 +5,39 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Contacts.Services;
 namespace Contacts.Controllers
 {    [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
+        private readonly ICategoriesService _CategoriesService;
 
-        private readonly ApplicationDbContext _context;
+        //private readonly ApplicationDbContext _context;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ICategoriesService CategoriesService)
         {
-            _context = context;
+            _CategoriesService = CategoriesService;
         }
 
         [HttpGet]//Żądanie HTTP GET na "api/Categories, zwraca kategorie i ich podkategorie"
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesWithSubCategories()
+        public IActionResult GetCategoriesWithSubCategories()
         {
-            var categoriesWithSubCategories = await _context.Categories.Include(c => c.SubCategories).ToListAsync();
+            var categoriesWithSubCategories =  _CategoriesService.GetCategoriesWithSubCategories();
             return Ok(categoriesWithSubCategories);
         }
 
         [HttpGet("{id}")]//Żądanie HTTP GET na "api/Categories/{id}, zwraca informacje o wybranej kategorii, w tym jej podkategorie
-        public async Task<ActionResult<Category>> GetCategoryWithSubCategories(int id)
+        public IActionResult GetCategoryWithSubCategories(int id)
         {
-            var category = await _context.Categories.Include(c => c.SubCategories).FirstOrDefaultAsync(c => c.Id == id);
+            var category = _CategoriesService.GetCategoryWithSubCategories(id);
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            return category;
+            return Ok(category);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Contacts.Data;
 using Contacts.Dtos;
 using Contacts.Models;
+using Contacts.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -15,25 +16,25 @@ namespace Contacts.Controllers
     [Authorize]
     public class ContactsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IContactsService _ContactsService;
 
-        public ContactsController(ApplicationDbContext context)
+        public ContactsController(IContactsService contactsService)
         {
-            _context = context;
+            _ContactsService = contactsService;
         }
 
         [AllowAnonymous]
         [HttpGet]//Żądanie HTTP GET na "api/Contacts, zwraca listę kontaktów"
         public IActionResult GetContacts()
         {
-            var contacts = _context.Contacts.ToList();
+            var contacts = _ContactsService.GetContacts();
             return Ok(contacts);
         }
 
         [HttpGet("{id}")]//Żądanie HTTP GET na "api/Contacts/{id}, zwraca infomację o wybranym kontakcie"
         public IActionResult GetContact(int id)
         {
-            var contact = _context.Contacts.Find(id);
+            var contact = _ContactsService.GetContact(id);
             if (contact == null)
                 return NotFound();
 
@@ -43,83 +44,54 @@ namespace Contacts.Controllers
         [HttpPost]
         public IActionResult CreateContact([FromBody] ContactDto contactDto)
         {
-            var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category)
-                                         .Select(c => c.Name)
-                                         .FirstOrDefault();
+            if (contactDto.HasEmptyOrNullFields())
+                return BadRequest("Not all fields are filled");
+
             if (!ValidateEmail(contactDto.Email))
             {
-                return BadRequest("Email is incorrect");
+                return BadRequest("Incorrect email");
             }
-
-            if (categoryName != null)
+            if (!ValidatePhoneNumber(contactDto.Phone))
             {
-                var contact = new Contact
-                {
-                    FirstName = contactDto.FirstName,
-                    LastName = contactDto.LastName,
-                    Email = contactDto.Email,
-                    Phone = contactDto.Phone,
-                    BirthDate = contactDto.BirthDate,
-                    Category = categoryName,
-                    SubCategory = contactDto.SubCategory
-                };
-
-                _context.Contacts.Add(contact);
-                _context.SaveChanges();
-
-                return CreatedAtAction(nameof(GetContact), new { id = contact.Id }, contact);
+                return BadRequest("Incorrect phone number");
             }
-            return NotFound();
+            var contact = _ContactsService.CreateContact(contactDto);
+
+            if (contact == null)
+            {
+                return BadRequest("Unknown category");
+            }
+            return Ok(contact);
+            
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateContact(int id, [FromBody] ContactDto contactDto)
         {
-            if(contactDto.FirstName.IsNullOrEmpty())
-                return BadRequest("Empty name");
+            if (contactDto.HasEmptyOrNullFields())
+                return BadRequest("Not all fields are filled");
 
             if (!ValidateEmail(contactDto.Email))
             {
-                return BadRequest("Email is incorrect");
+                return BadRequest("Incorrect email");
             }
             if (!ValidatePhoneNumber(contactDto.Phone))
             {
-                return BadRequest("Phone number is incorrect");
+                return BadRequest("Incorrect phone number");
             }
-            var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category)
-                                         .Select(c => c.Name)
-                                         .FirstOrDefault();
-            var contact = _context.Contacts.Find(id);
-            if (contact == null)
-                return NotFound();
-            if (categoryName != null)
-            {
-                contact.FirstName = contactDto.FirstName;
-                contact.LastName = contactDto.LastName;
-                contact.Email = contactDto.Email;
-                contact.Phone = contactDto.Phone;
-                contact.BirthDate = contactDto.BirthDate;
-                contact.Category = categoryName;
-                contact.SubCategory = contactDto.SubCategory;
-
-                _context.SaveChanges();
-
-                return NoContent();
-            }
-            return NotFound();
+            var contact = _ContactsService.UpdateContact(id, contactDto);
+            if(contact == null)
+                 return NotFound();
+            return Ok(contact);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteContact(int id)
         {
-            var contact = _context.Contacts.Find(id);
+            var contact = _ContactsService.DeleteContact(id);
             if (contact == null)
                 return NotFound();
-
-            _context.Contacts.Remove(contact);
-            _context.SaveChanges();
-
-            return NoContent();
+            return Ok(contact);
         }
         private bool ValidateEmail(string password)
         {

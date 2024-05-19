@@ -10,5 +10,15 @@
         public string SubCategory { get; set; }
         public string Phone { get; set; }
         public DateTime BirthDate { get; set; }
+        public bool HasEmptyOrNullFields()
+        {
+            return string.IsNullOrWhiteSpace(FirstName) ||
+                   string.IsNullOrWhiteSpace(LastName) ||
+                   string.IsNullOrWhiteSpace(Email) ||
+                   string.IsNullOrWhiteSpace(SubCategory) ||
+                   string.IsNullOrWhiteSpace(Phone) ||
+                   BirthDate.ToString() == "";
+        }
     }
+
 }

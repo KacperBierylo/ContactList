@@ -42,7 +42,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>(); // dodaje us³ugê uwierzytelniania jako zale¿noœæ
-
+builder.Services.AddScoped<ICategoriesService, CategoriesService>(); // dodaje us³ugê jako zale¿noœæ
+builder.Services.AddScoped<IContactsService, ContactsService>(); // dodaje us³ugê jako zale¿noœæ
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //dodaje politykê dla CORS, pozwalaj¹c¹ na dostêp z dowolnego Ÿród³a
