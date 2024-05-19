@@ -11,11 +11,9 @@ function loadHome() {
 
 function loadContacts() {
     const token = localStorage.getItem('token');
-  
+    // zapytanie o listę kontaktów
     fetch('https://localhost:7050/api/contacts', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+        method: 'GET'
     })
     .then(response => response.json())
     .then(data => {
@@ -36,11 +34,10 @@ function loadContacts() {
 function loadContactDetails(id) {
     const token = localStorage.getItem('token');
     if (!token) {
-        console.error('Użytkownik niezalogowany');
         loadLogin();
         return;
     }
-
+    //zapytanie o kontakt o padnym ID, dodany nagłówek do autoryzacji i token
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'GET',
         headers: {
@@ -73,7 +70,7 @@ function loadAddContact() {
         return;
     }
     
-
+    //zapytanie o listę kategorii, dodany nagłówek do autoryzacji i token
     fetch('https://localhost:7050/api/Categories')
     .then(response => response.json())
     .then(categories => {
@@ -128,7 +125,7 @@ function loadAddContact() {
 
     document.getElementById('addContactForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        let subcategory = "–"
+        let subcategory = "–" //domyślnie brak reprezentowany przez "–"
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('email').value;
@@ -138,6 +135,7 @@ function loadAddContact() {
             subcategory = document.getElementById('subcategory').value;
            }
         const birthDate = document.getElementById('birthDate').value;
+        // warunki na wypełnienie wszystkich pól
         if(firstName === ""){
             alert('Imię kontaktu nie może być puste');
             return;
@@ -146,6 +144,7 @@ function loadAddContact() {
             alert('Nazwisko kontaktu nie może być puste');
             return;
         }
+        //sprawdzanie porpawności maili i telefonu, puste nie pasują do regexa, więc nie potrzeba dodatkowych warunków
         var regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!regexEmail.test(email)) {
             alert('Nieprawidłowy adres email');
@@ -162,6 +161,7 @@ function loadAddContact() {
             alert('Data urodzenia kontaktu nie może być pusta');
             return;
         }
+        //żądanie dodania kontaktu
         fetch('https://localhost:7050/api/contacts', {
             method: 'POST',
             headers: {
@@ -187,19 +187,16 @@ function loadAddContact() {
         })
         .catch(error => console.error('Error:', error));
     });
-
-    //handleCategoryChange();
 }
 
 
 function loadEditContact(id) {
     const token = localStorage.getItem('token');
     if (!token) {
-        //console.error('No token found');
         loadLogin();
         return;
     }
-
+    //żądanie pobrania kontaktu o podanym ID, aby uzupełnić pola przy edycji danymi edytowanego kontaktu
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'GET',
         headers: {
@@ -253,6 +250,7 @@ function loadEditContact(id) {
         document.getElementById('content').innerHTML = editHTML;
         var contactCategory = 0;
         var contactSubCategory = contact.subCategory;
+        // pobranie listy kategorii i podkategorii, aby poprawnie wczytać formularz
         fetch('https://localhost:7050/api/Categories')
         .then(response => response.json())
         .then(categories => {
@@ -260,9 +258,10 @@ function loadEditContact(id) {
           categories.forEach(category => {
             const option = document.createElement('option');
             option.value = category.id;
+            // załadowanie kategorii i podkategorii tak, żeby stan domyślny odpowiadał stanowi aktualnemu
             if(contact.category == category.name){
                 contactCategory = category.id;
-                handleCategoryChange(category.id,contactSubCategory );
+                handleCategoryChange(category.id, contactSubCategory );
             }
             option.textContent = category.name;
             select.appendChild(option);
@@ -282,7 +281,7 @@ function loadEditContact(id) {
              subcategory = document.getElementById('subcategory').value;
             }
             const birthDate = document.getElementById('birthDate').value;
-  
+            //warunki poprawności inputu
             if(firstName === ""){
                 alert('Imię kontaktu nie może być puste');
                 return;
@@ -308,7 +307,7 @@ function loadEditContact(id) {
                 alert('Data urodzenia kontaktu nie może być pusta');
                 return;
             }
-
+            // żądanie aktualizacji kontaktu
             fetch(`https://localhost:7050/api/contacts/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -341,7 +340,6 @@ function loadEditContact(id) {
 
 function handleCategoryChange(categoryId=null, Csubcategory=null) {
  
-
     if(categoryId == null){
 
         category = document.getElementById('category').value;       
@@ -352,7 +350,7 @@ function handleCategoryChange(categoryId=null, Csubcategory=null) {
 
     let subcategories = []
     let canChoose = false
-
+    // żądanie pobrania podkategorii przekazanej do funkcji kategorii
     fetch(`https://localhost:7050/api/Categories/${category}`)
     .then(response => {
       if (!response.ok) {
@@ -363,6 +361,7 @@ function handleCategoryChange(categoryId=null, Csubcategory=null) {
     .then(data => {
       subcategories = data.subCategories;
       canChoose = data.canChoose;
+      // jeśli kategoria zawiera możliwe do wyboru podkategorie
       if(canChoose && subcategories.length != 0){
         const selectSubcategory = document.createElement('select');
         selectSubcategory.id = 'subcategory';
@@ -388,6 +387,7 @@ function handleCategoryChange(categoryId=null, Csubcategory=null) {
         subcategoryContainer.appendChild(label);
         subcategoryContainer.appendChild(selectSubcategory);
     }
+    // jeśli można wybrać kategorie, ale lista jest pusta, można wpisać dowolną
     else if(canChoose){
         const categoryContainer = document.getElementById('category');
         if(!(categoryId==null))
@@ -398,6 +398,7 @@ function handleCategoryChange(categoryId=null, Csubcategory=null) {
             subcategoryContainer.innerHTML = '<label>Podkategoria</label> <input type="text" id="subcategory">';
 
     }
+    // kiedy nie można wybrać kategorii, nie wyświetla się pole podkategorii
     else{
         const subcategoryContainer = document.getElementById('subcategoryContainer');
         subcategoryContainer.innerHTML = '';
@@ -416,7 +417,7 @@ function deleteContact(id) {
         loadLogin();
         return;
     }
-
+    //żądanie usunięcia kontaktu
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'DELETE',
         headers: {
@@ -433,7 +434,7 @@ function deleteContact(id) {
     })
     .catch(error => console.error('Error:', error));
 }
-
+    // wczytanie formularza logowania
 function loadLogin() {
     document.getElementById('content').innerHTML = `
         <h2>Zaloguj się</h2>
@@ -455,7 +456,7 @@ function loadLogin() {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
+        //żądanie zalogowania, wysyłany jest login i hasło na serwer
         fetch('https://localhost:7050/api/Auth/login', {
             method: 'POST',
             headers: {
@@ -476,7 +477,7 @@ function loadLogin() {
         .catch(error => console.error('Error:', error));
     });
 }
-
+    // wczytanie formularza rejsetracji
 function loadRegistration() {
     document.getElementById('content').innerHTML = `
         <h2>Rejestracja</h2>
@@ -503,7 +504,7 @@ function loadRegistration() {
         const username = document.getElementById('regUsername').value;
         const password = document.getElementById('regPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
-
+        // sprawdzenie zgodności pól na hasło i złożoności hasła
         if (password !== confirmPassword) {
             alert('Hasła nie zgadzają się ze sobą');
             return;
@@ -514,7 +515,7 @@ function loadRegistration() {
             alert('Hasło musi zawierać co najmniej jedną wielką literę angielską, małą literę angielską, cyfrę, znak specjalny (#?!@$%^&*-), osiem znaków.');
             return;
         }
-
+        // żądanie rejestracji, nazwa użytkownika i hasło są wysyłane na serwer
         fetch('https://localhost:7050/api/Auth/register', {
             method: 'POST',
             headers: {
@@ -532,13 +533,13 @@ function loadRegistration() {
         .catch(error => console.error('Error:', error));
     });
 }
-
+    // wyologowanie poprzez usunięcie tokenu z pamięci
 function logout() {
     localStorage.removeItem('token');
     loadHome();
     updateNav();
 }
-
+    // aktualizacja przycisków zalogowania i wylogowania w zależności od tego, czy użytkownik jest zalogowany 
 function updateNav() {
     const token = localStorage.getItem('token');
     if (token) {
