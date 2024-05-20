@@ -6,7 +6,7 @@ using Contacts.Models;
 
 namespace Contacts.Data
 {
-    public static class SeedData    //dodanie początkowych danych do bazy
+    public static class SeedData    // dodanie początkowych danych do bazy
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
@@ -19,7 +19,7 @@ namespace Contacts.Data
                   {
                       return;
                   }
-                //dodanie kategorii i ich podkategorii
+                // dodanie kategorii i ich podkategorii
                 context.Categories.AddRange(
                     new Category
                     {
@@ -44,7 +44,7 @@ namespace Contacts.Data
                     }
                 );
                 context.SaveChanges();
-                //dodanie początkowych kontaktów
+                // dodanie początkowych kontaktów
                 context.Contacts.AddRange(
                       new Contact
                       {
@@ -67,7 +67,7 @@ namespace Contacts.Data
                           BirthDate = new DateTime(1990, 2, 2)
                       }
                   );
-                //dodanie początkowych użytkowników
+                // dodanie początkowych użytkowników
 
                 context.Users.AddRange(
                       new User

@@ -24,14 +24,14 @@ namespace Contacts.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]//Żądanie HTTP GET na "api/Contacts, zwraca listę kontaktów"
+        [HttpGet]// żądanie HTTP GET na "api/Contacts, zwraca listę kontaktów"
         public IActionResult GetContacts()
         {
             var contacts = _ContactsService.GetContacts();
             return Ok(contacts);
         }
 
-        [HttpGet("{id}")]//Żądanie HTTP GET na "api/Contacts/{id}, zwraca infomację o wybranym kontakcie"
+        [HttpGet("{id}")]// żądanie HTTP GET na "api/Contacts/{id}, zwraca infomację o wybranym kontakcie"
         public IActionResult GetContact(int id)
         {
             var contact = _ContactsService.GetContact(id);

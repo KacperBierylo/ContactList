@@ -1,6 +1,6 @@
 ﻿namespace Contacts.Models
 {
-    public class Category   //określa tabelę kategorii
+    public class Category
     {
         public int Id { get; set; }
         public string Name { get; set; }

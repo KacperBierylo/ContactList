@@ -20,13 +20,13 @@ using (var dbContext = new ApplicationDbContext())
     dbContext.Database.EnsureCreated();
     dbContext.SaveChanges();
 }
-//domyœlny schemat uwierzytelniania
+// domyœlny schemat uwierzytelniania
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-//opcje tokenu
+// opcje tokena
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -46,7 +46,7 @@ builder.Services.AddScoped<ICategoriesService, CategoriesService>(); // dodaje u
 builder.Services.AddScoped<IContactsService, ContactsService>(); // dodaje us³ugê jako zale¿noœæ
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//dodaje politykê dla CORS, pozwalaj¹c¹ na dostêp z dowolnego Ÿród³a
+// dodaje politykê dla CORS, pozwalaj¹c¹ na dostêp z dowolnego Ÿród³a
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -58,17 +58,17 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())    //obs³uga swaggera
+if (app.Environment.IsDevelopment())    // obs³uga swaggera
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
-//dodaje obs³ugê routingu
+// dodaje obs³ugê routingu
 app.UseRouting();
-//dodaje obs³ugê uwierzytelniania
+// dodaje obs³ugê uwierzytelniania
 app.UseAuthentication();
-//dodaje obs³ugê autoryzacji
+// dodaje obs³ugê autoryzacji
 app.UseAuthorization();
 
 app.UseCors("AllowAllOrigins");

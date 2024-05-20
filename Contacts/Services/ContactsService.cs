@@ -32,7 +32,7 @@ namespace Contacts.Services
 
         public Contact CreateContact([FromBody] ContactDto contactDto)
         {
-            var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category) //szukanie nazwy kategorii po jej Id
+            var categoryName = _context.Categories.Where(c => c.Id == contactDto.Category) // szukanie nazwy kategorii po jej ID
                                          .Select(c => c.Name)
                                          .FirstOrDefault();
             if (categoryName != null)

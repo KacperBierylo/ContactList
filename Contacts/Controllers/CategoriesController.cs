@@ -13,21 +13,20 @@ namespace Contacts.Controllers
     {
         private readonly ICategoriesService _CategoriesService;
 
-        //private readonly ApplicationDbContext _context;
 
         public CategoriesController(ICategoriesService CategoriesService)
         {
             _CategoriesService = CategoriesService;
         }
 
-        [HttpGet]//Żądanie HTTP GET na "api/Categories, zwraca kategorie i ich podkategorie"
+        [HttpGet]// żądanie HTTP GET na "api/Categories, zwraca kategorie i ich podkategorie"
         public IActionResult GetCategoriesWithSubCategories()
         {
             var categoriesWithSubCategories =  _CategoriesService.GetCategoriesWithSubCategories();
             return Ok(categoriesWithSubCategories);
         }
 
-        [HttpGet("{id}")]//Żądanie HTTP GET na "api/Categories/{id}, zwraca informacje o wybranej kategorii, w tym jej podkategorie
+        [HttpGet("{id}")]// żądanie HTTP GET na "api/Categories/{id}, zwraca informacje o wybranej kategorii, w tym jej podkategorie
         public IActionResult GetCategoryWithSubCategories(int id)
         {
             var category = _CategoriesService.GetCategoryWithSubCategories(id);

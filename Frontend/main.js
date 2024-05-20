@@ -37,7 +37,7 @@ function loadContactDetails(id) {
         loadLogin();
         return;
     }
-    //zapytanie o kontakt o padnym ID, dodany nagłówek do autoryzacji i token
+    //zapytanie o kontakt o podanym ID, dodany nagłówek do autoryzacji i token
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'GET',
         headers: {
@@ -65,7 +65,6 @@ function loadContactDetails(id) {
 function loadAddContact() {
     const token = localStorage.getItem('token');
     if (!token) {
-        console.error('No token found');
         loadLogin();
         return;
     }
@@ -533,7 +532,7 @@ function loadRegistration() {
         .catch(error => console.error('Error:', error));
     });
 }
-    // wyologowanie poprzez usunięcie tokenu z pamięci
+    // wyologowanie poprzez usunięcie tokena z pamięci
 function logout() {
     localStorage.removeItem('token');
     loadHome();
