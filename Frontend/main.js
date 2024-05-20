@@ -37,7 +37,7 @@ function loadContactDetails(id) {
         loadLogin();
         return;
     }
-    //zapytanie o kontakt o podanym ID, dodany nagłówek do autoryzacji i token
+    // zapytanie o kontakt o podanym ID, dodany nagłówek do autoryzacji i token
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'GET',
         headers: {
@@ -69,7 +69,7 @@ function loadAddContact() {
         return;
     }
     
-    //zapytanie o listę kategorii, dodany nagłówek do autoryzacji i token
+    // zapytanie o listę kategorii, dodany nagłówek do autoryzacji i token
     fetch('https://localhost:7050/api/Categories')
     .then(response => response.json())
     .then(categories => {
@@ -124,7 +124,7 @@ function loadAddContact() {
 
     document.getElementById('addContactForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        let subcategory = "–" //domyślnie brak reprezentowany przez "–"
+        let subcategory = "–" // domyślnie brak reprezentowany przez "–"
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('email').value;
@@ -143,7 +143,7 @@ function loadAddContact() {
             alert('Nazwisko kontaktu nie może być puste');
             return;
         }
-        //sprawdzanie porpawności maili i telefonu, puste nie pasują do regexa, więc nie potrzeba dodatkowych warunków
+        // sprawdzanie porpawności maili i telefonu, puste nie pasują do regexa, więc nie potrzeba dodatkowych warunków
         var regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!regexEmail.test(email)) {
             alert('Nieprawidłowy adres email');
@@ -160,7 +160,7 @@ function loadAddContact() {
             alert('Data urodzenia kontaktu nie może być pusta');
             return;
         }
-        //żądanie dodania kontaktu
+        // żądanie dodania kontaktu
         fetch('https://localhost:7050/api/contacts', {
             method: 'POST',
             headers: {
@@ -195,7 +195,7 @@ function loadEditContact(id) {
         loadLogin();
         return;
     }
-    //żądanie pobrania kontaktu o podanym ID, aby uzupełnić pola przy edycji danymi edytowanego kontaktu
+    // żądanie pobrania kontaktu o podanym ID, aby uzupełnić pola przy edycji danymi edytowanego kontaktu
     fetch(`https://localhost:7050/api/contacts/${id}`, {
         method: 'GET',
         headers: {
@@ -455,7 +455,7 @@ function loadLogin() {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        //żądanie zalogowania, wysyłany jest login i hasło na serwer
+        //żądanie zalogowania, wysyłany są login i hasło na serwer
         fetch('https://localhost:7050/api/Auth/login', {
             method: 'POST',
             headers: {
@@ -532,7 +532,7 @@ function loadRegistration() {
         .catch(error => console.error('Error:', error));
     });
 }
-    // wyologowanie poprzez usunięcie tokena z pamięci
+    // wylogowanie poprzez usunięcie tokena z pamięci
 function logout() {
     localStorage.removeItem('token');
     loadHome();
